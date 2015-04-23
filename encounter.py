@@ -19,7 +19,7 @@ class EncounterGroup(object):
         self._level = level  #Level of the encounter as a whole
         self._name = name    #Short Name
         self._number = len(listOfMonsters)
-        self._keyList = listOfMonsters
+        self._encounterList = listOfMonsters
         self._encounterDict = dictOfMonsters
         self._description = descr
         self._totalXP, self._CR = self._calcXPandCR()
@@ -56,6 +56,7 @@ class EncounterGenerator(object):
 
     def createEncounter(self,CRvalue):
         """ creates a semi-random encounter based on a given CR value."""
+        keyList = []
         encounterList = []
         levelOneKeys = self._theMonsters.levelOne.keys()
         levelTwoKeys = self._theMonsters.levelTwo.keys()
@@ -77,21 +78,31 @@ class EncounterGenerator(object):
 
         while CR > 0:
             candidates = []
+            candidatesKeys = []
             for name in levelOneKeys:
                 if self._theMonsters.levelOne[name].cr <= CR:
-                    candidates.append(name)
+                    candidatesKeys.append(name)
+                    candidates.append(self._theMonsters.levelOne[name])
             for name in levelTwoKeys:
                 if self._theMonsters.levelTwo[name].cr <= CR:
-                    candidates.append(name)
+                    candidatesKeys.append(name)
+                    candidates.append(self._theMonsters.levelTwo[name])
             for name in levelThreeKeys:
                 if self._theMonsters.levelThree[name].cr <= CR:
-                    candidates.append(name)
-            CR = 0
-        print(candidates)
-        random.shuffle(candidates)
-        member = random.choice(candidates)
-        encounterList.append(member)
-        
+                    candidatesKeys.append(name)
+                    candidates.append(self._theMonsters.levelThree[name])
+            if candidates == []:
+                CR = 0
+            else:
+                
+                    
+                random.shuffle(candidates)
+                member = random.choice(candidates)
+                encounterList.append(member)
+                keyList.append(member.name)
+                CR -= member.cr
+                
+        print(keyList)
 
 #TestMain
 g = EncounterGenerator()
